@@ -1,6 +1,6 @@
 # Send ETH
 
-Send ETH is a simple React application that allows users to send Ether (ETH) to a specified Ethereum address. The application uses the Thirdweb SDK to interact with the Ethereum blockchain.
+Send ETH is a simple React application that allows users to send EVM funds to a specified Ethereum address. The application uses the Thirdweb SDK to interact with any EVM Compatible Blockchain.
 
 ![screencapture-sending-eth-vercel-app-2023-05-01-23_59_11](https://user-images.githubusercontent.com/106103625/235576608-573db7a8-16ec-47a1-af5a-6c5d88cc5691.png)
 
