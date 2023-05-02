@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { useSDK, useAddress, ConnectWallet } from '@thirdweb-dev/react';
 import { ethers } from 'ethers';
 import styles from '../styles/Home.module.css';
+import Swal from 'sweetalert2';
 
 function App() {
   const [amount, setAmount] = useState('');
@@ -19,53 +20,106 @@ function App() {
   const handleSendEth = useCallback(async () => {
     setIsLoading(true);
     setTransactionHash(null); // Reset the transaction hash
-
+  
     // Check if the wallet is connected
     if (!sdk) {
-      alert('Please connect your wallet first.');
+      Swal.fire('Error', 'Please connect your wallet first.', 'error');
       setIsLoading(false);
       return;
     }
     // Validate the recipient address
     if (!isValidRecipient) {
-      alert('Please enter a valid recipient address.');
+      Swal.fire('Error', 'Please enter a valid recipient address.', 'error');
       setIsLoading(false);
       return;
     }
     // Validate the amount to send
     if (!isValidAmount) {
-      alert('Please enter a valid amount.');
+      Swal.fire('Error', 'Please enter a valid amount.', 'error');
       setIsLoading(false);
       return;
     }
     try {
-      // Convert the amount from ETH to wei
-      const valueInWei = ethers.utils.parseEther(amount);
-      // Construct the transaction object
-      const tx = {
-        to: recipient,
-        value: valueInWei,
-      };
-      // Get the signer from the SDK
-      const signer = sdk.getSigner();
-      if (!signer) {
-        alert('Signer not available.');
-        setIsLoading(false);
-        return;
-      }
+      // Confirm transaction
+      const willSend = await Swal.fire({
+        title: 'Are you sure?',
+        html: `You are about to send <strong>${amount}</strong> ETH to <strong>${recipient}</strong>`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, send it!'
+      });
+  
+      if (willSend.isConfirmed) {
+        // Convert the amount from ETH to wei
+        const valueInWei = ethers.utils.parseEther(amount);
+        // Construct the transaction object
+        const tx = {
+          to: recipient,
+          value: valueInWei,
+        };
+        // Get the signer from the SDK
+        const signer = sdk.getSigner();
+        if (!signer) {
+          Swal.fire('Error', 'Signer not available.', 'error');
+          setIsLoading(false);
+          return;
+        }
 
-      // Send the transaction and wait for the response
-      const txResponse = await signer.sendTransaction(tx);
-      await txResponse.wait();
-      setTransactionHash(txResponse.hash); // Store the transaction hash
-      alert('Transaction successful!');
-      setAmount('');
-      setRecipient('');
+        // Ensure that the signer has a provider
+        if (!signer.provider) {
+          Swal.fire('Error', 'Provider not available.', 'error');
+          setIsLoading(false);
+          return;
+        }
+
+  
+        // Send the transaction and wait for the response
+        const txResponse = await signer.sendTransaction(tx);
+        await txResponse.wait();
+        setTransactionHash(txResponse.hash); // Store the transaction hash
+  
+        // Get network and construct explorer URL
+        const network = await signer.provider.getNetwork();
+        let explorerUrl;
+        switch (network.chainId) {
+          case 1: // Ethereum Mainnet
+            explorerUrl = `https://etherscan.io/tx/${txResponse.hash}`;
+            break;
+          case 3: // Ropsten Testnet
+            explorerUrl = `https://ropsten.etherscan.io/tx/${txResponse.hash}`;
+            break;
+          case 4: // Rinkeby Testnet
+            explorerUrl = `https://rinkeby.etherscan.io/tx/${txResponse.hash}`;
+            break;
+          case 5: // Goerli Testnet
+            explorerUrl = `https://goerli.etherscan.io/tx/${txResponse.hash}`;
+            break;
+          case 42: // Kovan Testnet
+            explorerUrl = `https://kovan.etherscan.io/tx/${txResponse.hash}`;
+            break;
+          case 80001: // Mumbai Testnet
+            explorerUrl = `https://mumbai.polygonscan.com/tx/${txResponse.hash}`;
+            break;
+          default: // Unknown network
+            explorerUrl = '';
+        }
+  
+        Swal.fire({
+          title: 'Success',
+          html: `Transaction successful! You can view your transaction <a href="${explorerUrl}" target="_blank">here</a>.`,
+          icon: 'success'
+        });
+        setAmount('');
+        setRecipient('');
+      }
     } catch (error) {
-      alert('Transaction failed: ' + error);
+      Swal.fire('Error', 'Transaction failed: ' + error, 'error');
     }
     setIsLoading(false);
   }, [sdk, recipient, amount, isValidAmount, isValidRecipient]);
+  
 
   // Construct the transaction URL on Etherscan (for Mainnet)
   const transactionUrl = transactionHash

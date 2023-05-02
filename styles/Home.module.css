@@ -1,16 +1,18 @@
-/* Home.module.css */
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   min-height: 90vh;
   padding: 1rem;
+  box-sizing: border-box;
 }
 
 .title {
   font-size: 4rem;
   font-weight: bold;
   margin-bottom: 1rem;
+  text-align: center;
 }
 
 .warning {
@@ -21,6 +23,8 @@
   font-style: italic;
   margin: 10px 0;
   margin-bottom: 60px;
+  text-align: center;
+  max-width: 600px;
 }
 
 .input {
@@ -30,6 +34,8 @@
   border-radius: 0.25rem;
   outline: none;
   height: 40px;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .input:focus {
@@ -96,4 +102,21 @@
 
 .image:hover {
   opacity: 0.75;
+}
+
+
+
+/* Responsive settings */
+@media (max-width: 600px) {
+  .title {
+    font-size: 2rem;
+  }
+
+  .warning {
+    font-size: 0.875rem;
+  }
+
+  .input, .button {
+    width: 100%;
+  }
 }
