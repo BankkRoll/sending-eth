@@ -7,6 +7,7 @@ function App() {
   const [amount, setAmount] = useState('');
   const [recipient, setRecipient] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [transactionHash, setTransactionHash] = useState<string | null>(null);
   const sdk = useSDK();
   const address = useAddress();
 
@@ -17,6 +18,8 @@ function App() {
 
   const handleSendEth = useCallback(async () => {
     setIsLoading(true);
+    setTransactionHash(null); // Reset the transaction hash
+
     // Check if the wallet is connected
     if (!sdk) {
       alert('Please connect your wallet first.');
@@ -54,6 +57,7 @@ function App() {
       // Send the transaction and wait for the response
       const txResponse = await signer.sendTransaction(tx);
       await txResponse.wait();
+      setTransactionHash(txResponse.hash); // Store the transaction hash
       alert('Transaction successful!');
       setAmount('');
       setRecipient('');
@@ -63,9 +67,18 @@ function App() {
     setIsLoading(false);
   }, [sdk, recipient, amount, isValidAmount, isValidRecipient]);
 
+  // Construct the transaction URL on Etherscan (for Mainnet)
+  const transactionUrl = transactionHash
+    ? `https://etherscan.io/tx/${transactionHash}`
+    : null;
+
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Send ETH</h1>
+      <p className={styles.warning}>
+        ⚠️ Please make sure you are on the network you wish to send funds on!
+      </p>
+
       {address ? (
         <>
           <input
@@ -85,6 +98,11 @@ function App() {
           <button onClick={handleSendEth} className={styles.button} disabled={!isFormValid || isLoading}>
             {isLoading ? 'Sending...' : 'Send ETH'}
           </button>
+          {transactionUrl && (
+            <a href={transactionUrl} target="_blank" rel="noopener noreferrer" className={styles.button}>
+              View Transaction
+            </a>
+          )}
         </>
       ) : (
         <ConnectWallet className={styles.button} />

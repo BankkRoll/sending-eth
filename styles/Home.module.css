@@ -8,9 +8,19 @@
 }
 
 .title {
-  font-size: 2rem;
+  font-size: 4rem;
   font-weight: bold;
   margin-bottom: 1rem;
+}
+
+.warning {
+  background-color: #ffffcc;
+  color: #333;
+  padding: 10px;
+  border-radius: 4px;
+  font-style: italic;
+  margin: 10px 0;
+  margin-bottom: 60px;
 }
 
 .input {
