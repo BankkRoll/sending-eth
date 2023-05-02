@@ -1,6 +1,6 @@
-# Send ETH
+# EVM Send
 
-Send ETH is a simple React application that allows users to send EVM funds to a specified Ethereum address. The application uses the Thirdweb SDK to interact with any EVM Compatible Blockchain.
+EVM Send is a simple React application that allows users to send EVM funds to a specified Ethereum address. The application uses the Thirdweb SDK to interact with any EVM Compatible Blockchain.
 
 ![screencapture-sending-eth-vercel-app-2023-05-01-23_59_11](https://user-images.githubusercontent.com/106103625/235576608-573db7a8-16ec-47a1-af5a-6c5d88cc5691.png)
 
@@ -36,13 +36,13 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Local Development
 
-1. If you are not already connected to a wallet, click the "Connect Wallet" button to connect your Ethereum wallet.
+1. If you are not already connected to a wallet, click the "Connect Wallet" button to connect your wallet.
 
 2. Enter the recipient's Ethereum address in the "Recipient Address" field.
 
-3. Enter the amount of ETH you wish to send in the "Amount (ETH)" field.
+3. Enter the amount of ETH(or any EVM compatible chain) you wish to send in the "Amount" field.
 
-4. Click the "Send ETH" button to initiate the transaction.
+4. Click the "Send Funds" button to initiate the transaction.
 
 5. Confirm the transaction in your wallet.
 
